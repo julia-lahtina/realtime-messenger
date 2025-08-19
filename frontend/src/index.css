@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.password-input::-ms-reveal {
+  display: none;
+}
+
+.password-input::-webkit-credentials-auto-fill-button {
+  display: none !important;
+}
+
+.password-input::-webkit-strong-password-auto-fill-button {
+  display: none !important;
+}
