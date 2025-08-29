@@ -7,12 +7,13 @@ interface IAuthState {
   authUser: IUser | null;
   isSigningUp: boolean;
   isLoggingIn: boolean;
-  isUpdatedProfile: boolean;
+  isUpdatingProfile: boolean;
   isCheckingAuth: boolean;
   checkAuth: () => Promise<void>;
   signup: (data: ISignupData) => Promise<void>;
   login: (data: ILoginData) => Promise<void>;
   logout: () => Promise<void>;
+  updateProfile: (data: IUpdateData) => Promise<void>;
 }
 
 interface IUser {
@@ -21,24 +22,18 @@ interface IUser {
   fullName: string;
   password: string;
   profilePic: string;
+  createdAt: string;
 }
 
-export interface ISignupData {
-  fullName: string;
-  email: string;
-  password: string;
-}
-
-export interface ILoginData {
-  email: string;
-  password: string;
-}
+export type ISignupData = Pick<IUser, "fullName" | "email" | "password">;
+export type ILoginData = Pick<IUser, "email" | "password">;
+export type IUpdateData = Pick<IUser, "profilePic">;
 
 export const useAuthStore = create<IAuthState>()((set) => ({
   authUser: null,
   isSigningUp: false,
   isLoggingIn: false,
-  isUpdatedProfile: false,
+  isUpdatingProfile: false,
   isCheckingAuth: true,
 
   checkAuth: async () => {
@@ -61,7 +56,7 @@ export const useAuthStore = create<IAuthState>()((set) => ({
       toast.success("Account created successfully");
     } catch (e: unknown) {
       const error = e as AxiosError<{ message: string }>;
-      console.error(error?.response?.data?.message ?? "Unknown error");
+      console.error("Error in signup store: ", error);
       toast.error(error?.response?.data?.message ?? "Something went wrong");
     } finally {
       set({ isSigningUp: false });
@@ -76,7 +71,7 @@ export const useAuthStore = create<IAuthState>()((set) => ({
       toast.success("Logged in successfully");
     } catch (e: unknown) {
       const error = e as AxiosError<{ message: string }>;
-      console.error(error?.response?.data?.message ?? "Unknown error");
+      console.error("Error in login store: ", error);
       toast.error(error?.response?.data?.message ?? "Something went wrong");
     } finally {
       set({ isLoggingIn: false });
@@ -90,8 +85,23 @@ export const useAuthStore = create<IAuthState>()((set) => ({
       toast.success("Logged out successfully");
     } catch (e: unknown) {
       const error = e as AxiosError<{ message: string }>;
-      console.error(error?.response?.data?.message ?? "Unknown error");
+      console.error("Error in logout store: ", error);
       toast.error(error?.response?.data?.message ?? "Something went wrong");
+    }
+  },
+
+  updateProfile: async (data: IUpdateData) => {
+    set({ isUpdatingProfile: true });
+    try {
+      const res = await axiosInstance.put("/auth/update-profile", data);
+      set({ authUser: res.data });
+      toast.success("Profile updated successfully");
+    } catch (e: unknown) {
+      const error = e as AxiosError<{ message: string }>;
+      console.error("Error in updateProfile store: ", error);
+      toast.error(error?.response?.data?.message ?? "Something went wrong");
+    } finally {
+      set({ isUpdatingProfile: false });
     }
   },
 }));
