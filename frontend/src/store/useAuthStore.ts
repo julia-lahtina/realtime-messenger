@@ -16,7 +16,7 @@ interface IAuthState {
   updateProfile: (data: IUpdateData) => Promise<void>;
 }
 
-interface IUser {
+export interface IUser {
   _id: string;
   email: string;
   fullName: string;
@@ -29,7 +29,7 @@ export type ISignupData = Pick<IUser, "fullName" | "email" | "password">;
 export type ILoginData = Pick<IUser, "email" | "password">;
 export type IUpdateData = Pick<IUser, "profilePic">;
 
-export const useAuthStore = create<IAuthState>()((set) => ({
+export const useAuthStore = create<IAuthState>((set) => ({
   authUser: null,
   isSigningUp: false,
   isLoggingIn: false,
