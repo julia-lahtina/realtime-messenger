@@ -9,6 +9,7 @@ interface IAuthState {
   isLoggingIn: boolean;
   isUpdatingProfile: boolean;
   isCheckingAuth: boolean;
+  onlineUsers: IUser[];
   checkAuth: () => Promise<void>;
   signup: (data: ISignupData) => Promise<void>;
   login: (data: ILoginData) => Promise<void>;
@@ -35,6 +36,7 @@ export const useAuthStore = create<IAuthState>((set) => ({
   isLoggingIn: false,
   isUpdatingProfile: false,
   isCheckingAuth: true,
+  onlineUsers: [],
 
   checkAuth: async () => {
     try {
