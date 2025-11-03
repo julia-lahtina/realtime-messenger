@@ -5,22 +5,31 @@ import type { IUser } from "./useAuthStore";
 import { axiosInstance } from "../lib/axios";
 
 interface IChatState {
-  messages: unknown;
+  messages: IMessage[];
   users: IUser[];
   selectedUser: IUser | null;
   isUsersLoading: boolean;
-  isMessageLoading: boolean;
+  isMessagesLoading: boolean;
   getUsers: () => Promise<void>;
   getMessages: (userId: string) => Promise<void>;
-  setSelectedUser: (selectedUser: IUser) => void;
+  setSelectedUser: (selectedUser: IUser | null) => void;
+  sendMessage: (messageData: Partial<IMessage>) => void;
 }
 
-export const useChatStore = create<IChatState>((set) => ({
+export interface IMessage {
+  _id: string;
+  senderId: string;
+  text: string | null;
+  image: string | null;
+  createdAt: string;
+}
+
+export const useChatStore = create<IChatState>((set, get) => ({
   messages: [],
   users: [],
   selectedUser: null,
   isUsersLoading: false,
-  isMessageLoading: false,
+  isMessagesLoading: false,
 
   getUsers: async () => {
     set({ isUsersLoading: true });
@@ -37,7 +46,7 @@ export const useChatStore = create<IChatState>((set) => ({
   },
 
   getMessages: async (userId: string) => {
-    set({ isMessageLoading: true });
+    set({ isMessagesLoading: true });
 
     try {
       const res = await axiosInstance.get(`/messages/${userId}`);
@@ -46,9 +55,23 @@ export const useChatStore = create<IChatState>((set) => ({
       const error = e as AxiosError<{ message: string }>;
       toast.error(error?.response?.data?.message ?? "Something went wrong");
     } finally {
-      set({ isMessageLoading: false });
+      set({ isMessagesLoading: false });
     }
   },
 
-  setSelectedUser: (selectedUser: IUser) => set({ selectedUser }),
+  sendMessage: async (messageData: Partial<IMessage>) => {
+    const { selectedUser, messages } = get();
+    try {
+      const res = await axiosInstance.post(
+        `/messages/send/${selectedUser?._id}`,
+        messageData
+      );
+      set({ messages: [...messages, res.data] });
+    } catch (e: unknown) {
+      const error = e as AxiosError<{ message: string }>;
+      toast.error(error?.response?.data?.message ?? "Something went wrong");
+    }
+  },
+
+  setSelectedUser: (selectedUser: IUser | null) => set({ selectedUser }),
 }));
