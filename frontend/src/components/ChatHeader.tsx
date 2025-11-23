@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { useAuthStore, type IUser } from "../store/useAuthStore";
+import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 
 const ChatHeader = () => {
@@ -22,7 +22,7 @@ const ChatHeader = () => {
                     <div>
                         <h3 className="font-medium">{selectedUser.fullName}</h3>
                         <p className="text-sm text-base-content/70">
-                            {onlineUsers.some((u: IUser) => u._id === selectedUser._id) ? "Online" : "Offline"}
+                            {onlineUsers.includes(selectedUser._id) ? "Online" : "Offline"}
                         </p>
                     </div>
                 </div>
