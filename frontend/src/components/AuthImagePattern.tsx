@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface IAuthImagePattern {
     title: string;
     subtitle: string;

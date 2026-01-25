@@ -1,4 +1,3 @@
-import React from 'react';
 import { useState, type FormEvent } from "react";
 import { useAuthStore, type ILoginData } from "../store/useAuthStore";
 import AuthImagePattern from "../components/AuthImagePattern";

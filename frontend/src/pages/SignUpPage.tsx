@@ -1,4 +1,3 @@
-import React from 'react';
 import { useState, type FormEvent } from "react";
 import { useAuthStore, type ISignupData } from "../store/useAuthStore";
 import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare, User } from "lucide-react";
